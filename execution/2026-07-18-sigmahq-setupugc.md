@@ -93,6 +93,58 @@ Do not add a registry rule in this PR. It is a useful follow-up only after the p
 | [Rule](https://github.com/SigmaHQ/sigma-specification/blob/main/sigmahq/sigmahq-rule-convention.md) | Required fields are present; 4-space indentation, public reference, `experimental` status, clear `Detects` description, `filter_main_*` naming, and concrete false-positive guidance conform. | Pass |
 | [Title](https://github.com/SigmaHQ/sigma-specification/blob/main/sigmahq/sigmahq-title-convention.md) | Original title used `Potential` at `high` level. The title guide reserves `Potential` for `medium`; `high` rules should use `Suspicious`. | Fixed: `Suspicious Proxy Execution Via SetupUGC` |
 
+## Maintainer-style PR review (2026-07-18)
+
+**Verdict: ready for maintainer review; no blocking code findings.**
+
+### What was reviewed
+
+| Area | Result | Evidence |
+|---|---|---|
+| Scope | Pass | Exactly one new, 29-line process-creation rule; no unrelated edits. |
+| Base branch | Pass | Branch merged cleanly against current `upstream/master` (`bc433784e`) at review time. |
+| Duplicate coverage | Pass | Repository search found no existing coverage for `setupugc`, `UnattendSettings`, `Setup-Unattend`, or `RunSynchronous`. |
+| Detection logic | Pass | Requires both `setupugc.exe` and one documented proxy-execution mode (`specialize` or `auditUser`), then excludes the two normal Setup parents specified by LOLBAS (`setup.exe`, `setuphost.exe`). |
+| Rule metadata | Pass | UUID, experimental status, description, public reference, ATT&CK tag, logsource, false-positive guidance, and severity are present and convention-aligned. |
+| GitHub review state | Pass | No inline review threads or requested changes. The only review is the automated first-time-contributor welcome message. |
+| Local validation | Pass | Targeted Sigma CLI validation: 0 errors, 0 condition errors, 0 issues; `tests/test_logsource.py`: 3 tests passed; diff whitespace check passed. |
+| Upstream Actions | Informational | `gh pr checks` reported no checks on the feature branch at review time. Do not claim an upstream CI run until GitHub reports it. |
+
+### Residual risk / likely maintainer question
+
+No Windows EVTX or Atomic Red Team fixture was available locally. The rule has been structurally validated, but it has **not** been executed against real Sysmon Event ID 1 data. If a maintainer asks for telemetry evidence, produce two sanitized events:
+
+1. **Expected detection:** `Image` ending in `\\setupugc.exe`, `CommandLine` containing ` specialize` or ` auditUser`, and a non-Setup parent such as `cmd.exe` or `powershell.exe`.
+2. **Expected exclusion:** the same image/mode with `ParentImage` ending in `\\setup.exe` or `\\setuphost.exe`.
+
+This is not a merge blocker under the current contribution guide because regression tests are optional, but it is the clearest next evidence to add if review requests it.
+
+### Repeat the PR review
+
+```bash
+SIGMA_REPO=/Users/architsingh/projects/sigma
+
+git -C "$SIGMA_REPO" fetch upstream master
+git -C "$SIGMA_REPO" switch new/setupugc-proxy-execution
+git -C "$SIGMA_REPO" diff --check upstream/master...HEAD
+git -C "$SIGMA_REPO" diff --find-renames --stat upstream/master...HEAD
+git -C "$SIGMA_REPO" diff --find-renames upstream/master...HEAD
+
+rg -n -i 'setupugc|unattendsettings|setup-unattend|runsynchronous' \
+  "$SIGMA_REPO/rules" \
+  "$SIGMA_REPO/rules-emerging-threats" \
+  "$SIGMA_REPO/rules-threat-hunting" \
+  "$SIGMA_REPO/rules-compliance" || true
+
+/private/tmp/sigmahq-ci-venv/bin/sigma check --fail-on-error --fail-on-issues \
+  --validation-config "$SIGMA_REPO/tests/sigma_cli_conf.yml" \
+  "$SIGMA_REPO/rules/windows/process_creation/proc_creation_win_setupugc_proxy_execution.yml"
+/private/tmp/sigmahq-ci-venv/bin/python "$SIGMA_REPO/tests/test_logsource.py"
+
+gh pr view 6152 -R SigmaHQ/sigma --json state,mergeable,reviewDecision,url
+gh pr checks 6152 -R SigmaHQ/sigma || true
+```
+
 ## Copy-pasteable commands
 
 ### Local development environment (mirrors upstream CI)
@@ -205,3 +257,4 @@ Append only. Include: branch name, rule path, test output summary, PR URL, revie
 - 2026-07-18: Opened [issue #6153](https://github.com/SigmaHQ/sigma/issues/6153) to document the `setupugc.exe` detection gap. Expanded [PR #6152](https://github.com/SigmaHQ/sigma/pull/6152)'s description with `Closes #6153`, the threat model, rule scope, exact local-validation commands/results, and GitHub-check status.
 - 2026-07-18: Triaged the SigmaHQ filename, rule, and title conventions. Updated the rule title from `Potential Proxy Execution Via SetupUGC` to `Suspicious Proxy Execution Via SetupUGC` because the rule's `high` level requires the `Suspicious` indicator. Revalidated cleanly and pushed commit `28a22d96f`.
 - 2026-07-18: Added `execution/scripts/verify-sigmahq-pr.sh`, which reproduces all current SigmaHQ CI gates locally with Python 3.11. Ran the full verifier successfully against the PR branch and added the exact commands and results to PR #6152.
+- 2026-07-18: Completed an independent maintainer-style review of PR #6152. No blocking code findings; updated this record with the full review matrix, repeatable review commands, and the only remaining evidence gap (real Windows/Sysmon telemetry).

@@ -18,4 +18,4 @@ Use [`scripts/verify-sigmahq-pr.sh`](scripts/verify-sigmahq-pr.sh) to run SigmaH
 
 | Date | Track | Status | Next action |
 |---|---|---|---|
-| 2026-07-18 | SigmaHQ / `setupugc.exe` proxy execution detection | PR [#6152](https://github.com/SigmaHQ/sigma/pull/6152) open | Monitor CI and maintainer feedback; respond within 24 hours |
+| 2026-07-18 | SigmaHQ / `setupugc.exe` proxy execution detection | PR [#6152](https://github.com/SigmaHQ/sigma/pull/6152) open; local review complete | Monitor upstream checks and maintainer feedback; if asked, add sanitized Windows process-creation evidence |
