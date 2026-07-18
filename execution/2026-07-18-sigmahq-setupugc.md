@@ -95,6 +95,36 @@ Do not add a registry rule in this PR. It is a useful follow-up only after the p
 
 ## Copy-pasteable commands
 
+### Local development environment (mirrors upstream CI)
+
+The reusable verifier is [`execution/scripts/verify-sigmahq-pr.sh`](scripts/verify-sigmahq-pr.sh). It creates an isolated Python 3.11 environment at `/private/tmp/sigmahq-ci-venv`, installs the same validator plugin line as the upstream workflow, and runs all five CI gates.
+
+```bash
+cd /Users/architsingh/projects/oss-contribution-strategy
+execution/scripts/verify-sigmahq-pr.sh /Users/architsingh/projects/sigma
+```
+
+Equivalent manual setup and verification commands:
+
+```bash
+cd /Users/architsingh/projects/sigma
+python3.11 -m venv /private/tmp/sigmahq-ci-venv
+/private/tmp/sigmahq-ci-venv/bin/pip install --upgrade pip
+/private/tmp/sigmahq-ci-venv/bin/pip install \
+  PyYAML colorama yamllint pysigma sigma-cli \
+  'pySigma-validators-sigmahq==0.20.*'
+
+yamllint --strict .
+/private/tmp/sigmahq-ci-venv/bin/python tests/test_logsource.py
+/private/tmp/sigmahq-ci-venv/bin/python tests/test_rules.py
+/private/tmp/sigmahq-ci-venv/bin/sigma check --fail-on-error --fail-on-issues \
+  --validation-config tests/sigma_cli_conf.yml \
+  rules*
+grep -rh '^id: ' rules* deprecated unsupported | sort | uniq -c | grep -vE '^\s+1 id: '
+```
+
+Completed on 2026-07-18 against commit `28a22d96f`: strict YAML lint passed; the log-source suite passed (3 tests); legacy rule tests passed; full Sigma validation returned 0 errors, 0 condition errors, and 0 issues; and no duplicate IDs were found.
+
 ### Resume research / verify that the gap remains
 
 ```bash
@@ -174,3 +204,4 @@ Append only. Include: branch name, rule path, test output summary, PR URL, revie
 - 2026-07-18: Inspected [review #4728508302](https://github.com/SigmaHQ/sigma/pull/6152#pullrequestreview-4728508302). It is the automated first-time-contributor welcome message only; no review threads, inline comments, or requested changes exist. No PR update or reply is needed.
 - 2026-07-18: Opened [issue #6153](https://github.com/SigmaHQ/sigma/issues/6153) to document the `setupugc.exe` detection gap. Expanded [PR #6152](https://github.com/SigmaHQ/sigma/pull/6152)'s description with `Closes #6153`, the threat model, rule scope, exact local-validation commands/results, and GitHub-check status.
 - 2026-07-18: Triaged the SigmaHQ filename, rule, and title conventions. Updated the rule title from `Potential Proxy Execution Via SetupUGC` to `Suspicious Proxy Execution Via SetupUGC` because the rule's `high` level requires the `Suspicious` indicator. Revalidated cleanly and pushed commit `28a22d96f`.
+- 2026-07-18: Added `execution/scripts/verify-sigmahq-pr.sh`, which reproduces all current SigmaHQ CI gates locally with Python 3.11. Ran the full verifier successfully against the PR branch and added the exact commands and results to PR #6152.

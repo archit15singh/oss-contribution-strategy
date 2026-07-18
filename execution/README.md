@@ -12,6 +12,8 @@ Each dated entry records:
 
 Start future sessions with the newest dated entry, then run its `Resume commands` section. Do not re-open work marked `Do not pursue` unless the recorded external state has changed.
 
+Use [`scripts/verify-sigmahq-pr.sh`](scripts/verify-sigmahq-pr.sh) to run SigmaHQ's current CI gates locally against a clone. It deliberately uses Python 3.11, matching the upstream workflow.
+
 ## Active work
 
 | Date | Track | Status | Next action |
