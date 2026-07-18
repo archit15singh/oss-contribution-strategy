@@ -54,7 +54,7 @@ Before committing, confirm the `OriginalFileName` casing from the binary or omit
 ### Proposed metadata
 
 ```yaml
-title: Potential Proxy Execution Via SetupUGC
+title: Suspicious Proxy Execution Via SetupUGC
 id: 5868223f-f84e-4a20-91b8-b3289daab2cc
 status: experimental
 description: Detects potential proxy execution via setupugc.exe, a Windows deployment binary, outside of normal Windows Setup context.
@@ -84,6 +84,14 @@ Do not add a registry rule in this PR. It is a useful follow-up only after the p
 - Similar Sigma style references:
   - `rules/windows/process_creation/proc_creation_win_lolbin_mavinject_process_injection.yml`
   - `rules/windows/process_creation/proc_creation_win_lolbin_ie4uinit.yml`
+
+## Convention triage (2026-07-18)
+
+| Convention | Finding | Outcome |
+|---|---|---|
+| [Filename](https://github.com/SigmaHQ/sigma-specification/blob/main/sigmahq/sigmahq-filename-convention.md) | `proc_creation_win_setupugc_proxy_execution.yml` matches the required `proc_creation_win_*` pattern for the Windows `process_creation` category. | Pass |
+| [Rule](https://github.com/SigmaHQ/sigma-specification/blob/main/sigmahq/sigmahq-rule-convention.md) | Required fields are present; 4-space indentation, public reference, `experimental` status, clear `Detects` description, `filter_main_*` naming, and concrete false-positive guidance conform. | Pass |
+| [Title](https://github.com/SigmaHQ/sigma-specification/blob/main/sigmahq/sigmahq-title-convention.md) | Original title used `Potential` at `high` level. The title guide reserves `Potential` for `medium`; `high` rules should use `Suspicious`. | Fixed: `Suspicious Proxy Execution Via SetupUGC` |
 
 ## Copy-pasteable commands
 
@@ -165,3 +173,4 @@ Append only. Include: branch name, rule path, test output summary, PR URL, revie
 - 2026-07-18: Committed `636fae564` (`new: detect potential proxy execution via setupugc`), pushed branch `new/setupugc-proxy-execution`, and opened [SigmaHQ/sigma PR #6152](https://github.com/SigmaHQ/sigma/pull/6152).
 - 2026-07-18: Inspected [review #4728508302](https://github.com/SigmaHQ/sigma/pull/6152#pullrequestreview-4728508302). It is the automated first-time-contributor welcome message only; no review threads, inline comments, or requested changes exist. No PR update or reply is needed.
 - 2026-07-18: Opened [issue #6153](https://github.com/SigmaHQ/sigma/issues/6153) to document the `setupugc.exe` detection gap. Expanded [PR #6152](https://github.com/SigmaHQ/sigma/pull/6152)'s description with `Closes #6153`, the threat model, rule scope, exact local-validation commands/results, and GitHub-check status.
+- 2026-07-18: Triaged the SigmaHQ filename, rule, and title conventions. Updated the rule title from `Potential Proxy Execution Via SetupUGC` to `Suspicious Proxy Execution Via SetupUGC` because the rule's `high` level requires the `Suspicious` indicator. Revalidated cleanly and pushed commit `28a22d96f`.
