@@ -54,3 +54,4 @@ Maximise resume ROI for senior backend/AI engineer role (target: OpenAI, Anthrop
 | `issues/opentelemetry-analysis.md` | OpenTelemetry — why skip (6yr old issues) |
 | `issues/meta-analysis.md` | Cross-project comparison + narrative framework |
 | `trending-repos.md` | Weekly snapshot of GitHub trending repos with contribution-fit verdicts |
+| `discovered-repos.md` | Topic-search wave (80+ queries) → fit-filtered contribution-candidate ledger |
