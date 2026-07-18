@@ -1,0 +1,4 @@
+# Local upstream checkouts used for OSS contribution work.
+# Their own Git remotes and histories are managed independently.
+/elastic-detection-rules/
+/sigma/

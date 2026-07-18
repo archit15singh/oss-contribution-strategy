@@ -14,6 +14,8 @@ Start future sessions with the newest dated entry, then run its `Resume commands
 
 Use [`scripts/verify-sigmahq-pr.sh`](scripts/verify-sigmahq-pr.sh) to run SigmaHQ's current CI gates locally against a clone. It deliberately uses Python 3.11, matching the upstream workflow.
 
+See [Local Contribution Checkouts](checkouts.md) for the separation between active PR worktrees and clean upstream tracking clones.
+
 ## Active work
 
 | Date | Track | Status | Next action |
